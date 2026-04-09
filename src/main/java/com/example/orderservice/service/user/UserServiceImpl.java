@@ -1,6 +1,7 @@
 package com.example.orderservice.service.user;
 
 import com.example.orderservice.domain.User;
+import com.example.orderservice.domain.UserFactory;
 import com.example.orderservice.dto.RegisterRequestDTO;
 import com.example.orderservice.entity.UserEntity;
 import com.example.orderservice.repository.UserRepository;
@@ -13,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service

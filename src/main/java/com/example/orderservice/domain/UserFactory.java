@@ -1,7 +1,4 @@
-package com.example.orderservice.service.user;
-
-import com.example.orderservice.domain.Role;
-import com.example.orderservice.domain.User;
+package com.example.orderservice.domain;
 
 import java.util.UUID;
 

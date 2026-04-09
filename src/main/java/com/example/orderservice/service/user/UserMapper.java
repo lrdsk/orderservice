@@ -1,6 +1,7 @@
 package com.example.orderservice.service.user;
 
 import com.example.orderservice.domain.User;
+import com.example.orderservice.domain.UserFactory;
 import com.example.orderservice.entity.Role;
 import com.example.orderservice.entity.UserEntity;
 import org.springframework.stereotype.Component;
