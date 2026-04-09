@@ -22,11 +22,11 @@ public class OrderEntity {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(nullable = false)
     private Status status = Status.CREATED;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @ManyToOne
