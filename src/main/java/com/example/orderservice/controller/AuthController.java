@@ -49,7 +49,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<HttpStatus> register(@RequestBody RegisterRequestDTO registerRequestDTO) {
         LOG.info("Try to register new user with username: {}", registerRequestDTO.username());
-        userService.registerUser(registerRequestDTO);
+        userService.register(registerRequestDTO);
         LOG.info("The new user has been successfully registered");
 
         return ResponseEntity.ok(HttpStatus.CREATED);
@@ -58,7 +58,7 @@ public class AuthController {
     @GetMapping("/me")
     public UserDTO getInformation(@AuthenticationPrincipal UserDetails userDetails) {
         LOG.info("Try to get information for user with username: {}", userDetails.getUsername());
-        User userInformation = userService.getUserInformation(userDetails.getUsername());
+        User userInformation = userService.getInformationByUsername(userDetails.getUsername());
 
         return new UserDTO(
                 userInformation.id(),

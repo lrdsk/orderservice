@@ -12,6 +12,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -21,7 +25,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Transactional
-    public User registerUser(RegisterRequestDTO request) {
+    public User register(RegisterRequestDTO request) {
         if (userRepository.existsByUsername(request.username())) {
             throw new UsernameAlreadyExistsException("Username '" + request.username() + "' is already taken");
         }
@@ -35,10 +39,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserInformation(String username) {
+    public User getInformationByUsername(String username) {
         UserEntity userEntity = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("User with username \"%s\" not found".formatted(username)));
 
         return userMapper.fromModel(userEntity);
+    }
+
+    @Override
+    public List<User> findAll() {
+        List<UserEntity> userEntities = userRepository.findAll();
+
+        return userEntities.stream()
+                .map(userMapper::fromModel)
+                .toList();
+    }
+
+    @Transactional
+    @Override
+    public void delete(UUID id) {
+        userRepository.deleteById(id);
     }
 }
