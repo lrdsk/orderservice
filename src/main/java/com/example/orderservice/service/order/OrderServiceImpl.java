@@ -16,10 +16,12 @@ import com.example.orderservice.service.user.UserMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -33,11 +35,19 @@ public class OrderServiceImpl implements OrderService {
     private final UserMapper userMapper;
 
     @Override
-    public List<Order> findAll() {
-        return orderRepository.findAll()
-                .stream()
-                .map(orderMapper::fromModel)
-                .toList();
+    public Page<Order> findAll(Pageable pageable) {
+        return orderRepository.findAll(pageable)
+                .map(orderMapper::fromModel);
+    }
+
+    @Override
+    public Page<Order> findByUsername(String username, Pageable pageable) {
+        UserEntity userEntity = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User with username \"%s\" not found".formatted(username)));
+
+        Page<OrderEntity> orders = orderRepository.findByUserId(userEntity.getId(), pageable);
+
+        return orders.map(orderMapper::fromModel);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.example.orderservice.controller;
 
 import com.example.orderservice.domain.Order;
-import com.example.orderservice.domain.User;
 import com.example.orderservice.dto.AdminOrderResponseDTO;
 import com.example.orderservice.dto.OrderRequestDTO;
 import com.example.orderservice.dto.OrderResponseDTO;
@@ -10,6 +9,10 @@ import com.example.orderservice.service.OrderService;
 import com.example.orderservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,7 +20,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -37,17 +39,18 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<OrderResponseDTO> getAllOrdersForCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+    public Page<OrderResponseDTO> getAllOrdersForCurrentUser(@AuthenticationPrincipal UserDetails userDetails,
+                                                             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         log.info("Try to get all orders for user with username: {}", userDetails.getUsername());
 
-        User user = userService.findInformationByUsername(userDetails.getUsername());
-        return mapToOrderResponseDTOs(user.getOrders());
+        Page<Order> orders = orderService.findByUsername(userDetails.getUsername(), pageable);
+        return orders.map(this::mapToOrderResponseDTO);
     }
 
     @GetMapping("/all")
-    public List<AdminOrderResponseDTO> getAllOrders() {
+    public Page<AdminOrderResponseDTO> getAllOrders(@PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         log.info("Try to get all orders");
-        return mapToAdminOrderResponseDTOs(orderService.findAll());
+        return orderService.findAll(pageable).map(this::mapToAdminOrderResponseDTO);
     }
 
     @PutMapping("/{id}")
@@ -66,29 +69,15 @@ public class OrderController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    private static List<OrderResponseDTO> mapToOrderResponseDTOs(List<Order> orders) {
-        return orders.stream()
-                .map(order -> new OrderResponseDTO(
+    private OrderResponseDTO mapToOrderResponseDTO(Order order) {
+        return new OrderResponseDTO(
                         order.getDescription(),
                         order.getStatus().toString(),
                         order.getCreatedAt()
-                ))
-                .toList();
+                );
     }
 
-    private static List<AdminOrderResponseDTO> mapToAdminOrderResponseDTOs(List<Order> orders) {
-        return orders.stream()
-                .map(order -> new AdminOrderResponseDTO(
-                        order.getId(),
-                        order.getUserId(),
-                        order.getDescription(),
-                        order.getStatus().toString(),
-                        order.getCreatedAt()
-                ))
-                .toList();
-    }
-
-    private static AdminOrderResponseDTO mapToAdminOrderResponseDTO(Order order) {
+    private AdminOrderResponseDTO mapToAdminOrderResponseDTO(Order order) {
         return new AdminOrderResponseDTO(
                 order.getId(),
                 order.getUserId(),
