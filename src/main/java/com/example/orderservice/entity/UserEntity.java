@@ -29,4 +29,12 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.USER;
+
+    public void addOrder(OrderEntity orderEntity) {
+        if(orders.contains(orderEntity)) {
+            throw new IllegalStateException("Order already exists");
+        }
+        orders.add(orderEntity);
+        orderEntity.setUser(this);
+    }
 }

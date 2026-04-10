@@ -1,7 +1,7 @@
 package com.example.orderservice.service.user;
 
-import com.example.orderservice.domain.User;
-import com.example.orderservice.domain.UserFactory;
+import com.example.orderservice.domain.*;
+import com.example.orderservice.dto.OrderRequestDTO;
 import com.example.orderservice.dto.RegisterRequestDTO;
 import com.example.orderservice.entity.UserEntity;
 import com.example.orderservice.repository.UserRepository;
@@ -9,6 +9,9 @@ import com.example.orderservice.repository.exception.UsernameAlreadyExistsExcept
 import com.example.orderservice.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,7 +33,7 @@ public class UserServiceImpl implements UserService {
             throw new UsernameAlreadyExistsException("Username '" + request.username() + "' is already taken");
         }
 
-        User user = UserFactory.createUser(request.username(), passwordEncoder.encode(request.password()), "USER");
+        User user = UserFactory.createUser(request.username(), passwordEncoder.encode(request.password()), Role.USER, List.of());
 
         UserEntity userEntity = userMapper.toModel(user);
         userRepository.save(userEntity);
@@ -39,7 +42,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getInformationByUsername(String username) {
+    public User findInformationByUsername(String username) {
         UserEntity userEntity = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User with username \"%s\" not found".formatted(username)));
 
@@ -59,5 +62,33 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(UUID id) {
         userRepository.deleteById(id);
+    }
+
+    @Transactional
+    @Override
+    public void addNewOrder(String username, OrderRequestDTO orderRequestDTO) {
+        UserEntity userEntity = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User with username \"%s\" not found".formatted(username)));
+
+        User user = userMapper.fromModel(userEntity);
+        Order order = OrderFactory.createOrder(orderRequestDTO.description(), user.getId());
+
+        user.addOrder(order);
+
+        UserEntity updatedUserEntity = userMapper.toModel(user);
+
+        userRepository.save(updatedUserEntity);
+    }
+
+    @Override
+    public User getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new AuthenticationException("Not authenticated") {};
+        }
+        String username = auth.getName();
+        return userRepository.findByUsername(username)
+                .map(userMapper::fromModel)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 }

@@ -4,8 +4,7 @@ import com.example.orderservice.domain.User;
 import com.example.orderservice.dto.UserDTO;
 import com.example.orderservice.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +15,13 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
-    private final static Logger LOG = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
 
     @GetMapping()
     public List<UserDTO> getAllUsers() {
-        LOG.info("Getting information about all users");
+        log.info("Getting information about all users");
         List<User> users = userService.findAll();
 
         return mapToUserDTO(users);
@@ -30,7 +29,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteUserById(@PathVariable("id") UUID id) {
-        LOG.info("Try to delete user with id: {}", id);
+        log.info("Try to delete user with id: {}", id);
         userService.delete(id);
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -40,9 +39,9 @@ public class UserController {
     private List<UserDTO> mapToUserDTO(List<User> users) {
         return users.stream()
                 .map(user -> new UserDTO(
-                        user.id(),
-                        user.username(),
-                        user.role().toString()))
+                        user.getId(),
+                        user.getUsername(),
+                        user.getRole().toString()))
                 .toList();
     }
 }
