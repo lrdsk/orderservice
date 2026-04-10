@@ -28,4 +28,14 @@ public class User {
         }
         orders.add(order);
     }
+
+    public void changeOrders(Order updatedOrder) {
+        orders.stream()
+                .filter(currentOrder -> updatedOrder.getId().equals(currentOrder.getId()))
+                .findFirst()
+                .ifPresent(foundOrder -> {
+                    orders.remove(foundOrder);
+                    orders.add(updatedOrder);
+                });
+    }
 }

@@ -5,6 +5,7 @@ import com.example.orderservice.domain.User;
 import com.example.orderservice.dto.AdminOrderResponseDTO;
 import com.example.orderservice.dto.OrderRequestDTO;
 import com.example.orderservice.dto.OrderResponseDTO;
+import com.example.orderservice.dto.OrderStatusRequestDTO;
 import com.example.orderservice.service.OrderService;
 import com.example.orderservice.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -48,6 +50,14 @@ public class OrderController {
         return mapToAdminOrderResponseDTOs(orderService.findAll());
     }
 
+    @PutMapping("/{id}")
+    public AdminOrderResponseDTO changeOrderStatus(@PathVariable("id") UUID orderId, @RequestBody OrderStatusRequestDTO orderStatusRequestDTO) {
+        LOG.info("Try to change status to: {} for order with id: {}", orderStatusRequestDTO.status(), orderId);
+        Order order = orderService.changeStatus(orderId, orderStatusRequestDTO.status());
+
+        return mapToAdminOrderResponseDTO(order);
+    }
+
     private static List<OrderResponseDTO> mapToOrderResponseDTOs(List<Order> orders) {
         return orders.stream()
                 .map(order -> new OrderResponseDTO(
@@ -61,11 +71,22 @@ public class OrderController {
     private static List<AdminOrderResponseDTO> mapToAdminOrderResponseDTOs(List<Order> orders) {
         return orders.stream()
                 .map(order -> new AdminOrderResponseDTO(
+                        order.getId(),
                         order.getUserId(),
                         order.getDescription(),
                         order.getStatus().toString(),
                         order.getCreatedAt()
                 ))
                 .toList();
+    }
+
+    private static AdminOrderResponseDTO mapToAdminOrderResponseDTO(Order order) {
+        return new AdminOrderResponseDTO(
+                order.getId(),
+                order.getUserId(),
+                order.getDescription(),
+                order.getStatus().toString(),
+                order.getCreatedAt()
+        );
     }
 }

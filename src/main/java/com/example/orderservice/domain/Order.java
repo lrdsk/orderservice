@@ -23,4 +23,8 @@ public class Order {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+    public void changeStatus(Status status) {
+        this.status = status;
+    }
 }
