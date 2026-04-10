@@ -15,6 +15,7 @@ public final class UserFactory {
             List<Order> orders) {
         return new User(UUID.randomUUID(), username, password, role, orders);
     }
+
     public static User createUser(
             UUID id,
             String username,

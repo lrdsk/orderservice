@@ -1,6 +1,7 @@
 package com.example.orderservice.domain;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -11,6 +12,7 @@ public class Order {
     private String description;
     private Status status;
     private final UUID userId;
+    @Setter
     private LocalDateTime createdAt;
 
     public Order(UUID id, String description, Status status, UUID userId) {
@@ -18,10 +20,6 @@ public class Order {
         this.description = description;
         this.status = status;
         this.userId = userId;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 
     public void changeStatus(Status status) {

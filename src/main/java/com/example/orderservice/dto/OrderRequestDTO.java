@@ -1,4 +1,6 @@
 package com.example.orderservice.dto;
 
-public record OrderRequestDTO(String description) {
+import jakarta.validation.constraints.NotBlank;
+
+public record OrderRequestDTO(@NotBlank String description) {
 }

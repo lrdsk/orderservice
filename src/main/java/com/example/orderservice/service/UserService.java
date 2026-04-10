@@ -9,9 +9,14 @@ import java.util.UUID;
 
 public interface UserService {
     User register(RegisterRequestDTO request);
+
     User findInformationByUsername(String username);
+
     List<User> findAll();
+
     void delete(UUID id);
+
     void addNewOrder(String username, OrderRequestDTO orderRequestDTO);
 
+    User getCurrentUser();
 }

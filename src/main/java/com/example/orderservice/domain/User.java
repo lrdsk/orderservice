@@ -23,19 +23,16 @@ public class User {
     }
 
     public void addOrder(Order order) {
-        if(orders.contains(order)) {
+        if (orders.contains(order)) {
             throw new IllegalStateException("Current user with id \"%s\" already has this order with id \"%s\"".formatted(id, order.getId()));
         }
         orders.add(order);
     }
 
-    public void changeOrders(Order updatedOrder) {
+    public void removeOrder(UUID orderId) {
         orders.stream()
-                .filter(currentOrder -> updatedOrder.getId().equals(currentOrder.getId()))
+                .filter(order -> order.getId().equals(orderId))
                 .findFirst()
-                .ifPresent(foundOrder -> {
-                    orders.remove(foundOrder);
-                    orders.add(updatedOrder);
-                });
+                .ifPresent(foundOrder -> orders.remove(foundOrder));
     }
 }
