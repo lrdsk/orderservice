@@ -2,8 +2,10 @@ package com.example.orderservice.controller;
 
 import com.example.orderservice.domain.Order;
 import com.example.orderservice.domain.User;
+import com.example.orderservice.dto.AdminOrderResponseDTO;
 import com.example.orderservice.dto.OrderRequestDTO;
 import com.example.orderservice.dto.OrderResponseDTO;
+import com.example.orderservice.service.OrderService;
 import com.example.orderservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import java.util.List;
 public class OrderController {
     private final static Logger LOG = LoggerFactory.getLogger(OrderController.class);
     private final UserService userService;
+    private final OrderService orderService;
 
     @PostMapping
     public ResponseEntity<HttpStatus> createOrder(@AuthenticationPrincipal UserDetails userDetails, @RequestBody OrderRequestDTO orderRequestDTO) {
@@ -32,16 +35,33 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<OrderResponseDTO> getAllOrders(@AuthenticationPrincipal UserDetails userDetails) {
-        LOG.info("Try to find all orders for user with username: {}", userDetails.getUsername());
+    public List<OrderResponseDTO> getAllOrdersForCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+        LOG.info("Try to get all orders for user with username: {}", userDetails.getUsername());
 
         User user = userService.findInformationByUsername(userDetails.getUsername());
         return mapToOrderResponseDTOs(user.getOrders());
     }
 
+    @GetMapping("/all")
+    public List<AdminOrderResponseDTO> getAllOrders() {
+        LOG.info("Try to get all orders");
+        return mapToAdminOrderResponseDTOs(orderService.findAll());
+    }
+
     private static List<OrderResponseDTO> mapToOrderResponseDTOs(List<Order> orders) {
         return orders.stream()
                 .map(order -> new OrderResponseDTO(
+                        order.getDescription(),
+                        order.getStatus().toString(),
+                        order.getCreatedAt()
+                ))
+                .toList();
+    }
+
+    private static List<AdminOrderResponseDTO> mapToAdminOrderResponseDTOs(List<Order> orders) {
+        return orders.stream()
+                .map(order -> new AdminOrderResponseDTO(
+                        order.getUserId(),
                         order.getDescription(),
                         order.getStatus().toString(),
                         order.getCreatedAt()
