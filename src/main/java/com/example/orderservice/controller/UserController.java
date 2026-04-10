@@ -40,9 +40,9 @@ public class UserController {
     private List<UserDTO> mapToUserDTO(List<User> users) {
         return users.stream()
                 .map(user -> new UserDTO(
-                        user.id(),
-                        user.username(),
-                        user.role().toString()))
+                        user.getId(),
+                        user.getUsername(),
+                        user.getRole().toString()))
                 .toList();
     }
 }

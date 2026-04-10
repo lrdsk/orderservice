@@ -58,12 +58,12 @@ public class AuthController {
     @GetMapping("/me")
     public UserDTO getInformation(@AuthenticationPrincipal UserDetails userDetails) {
         LOG.info("Try to get information for user with username: {}", userDetails.getUsername());
-        User userInformation = userService.getInformationByUsername(userDetails.getUsername());
+        User userInformation = userService.findInformationByUsername(userDetails.getUsername());
 
         return new UserDTO(
-                userInformation.id(),
-                userInformation.username(),
-                userInformation.role().toString()
+                userInformation.getId(),
+                userInformation.getUsername(),
+                userInformation.getRole().toString()
         );
     }
 }
