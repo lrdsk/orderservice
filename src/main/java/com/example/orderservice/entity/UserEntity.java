@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "users")
 @NoArgsConstructor
 @Getter
 @Setter
@@ -21,10 +21,12 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderEntity> orders = new ArrayList<>();
 
-    @Column(name = "username", nullable = false)
+    @Column(nullable = false)
     private String username;
 
+    private String password;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
+    @Column(nullable = false)
     private Role role = Role.USER;
 }
