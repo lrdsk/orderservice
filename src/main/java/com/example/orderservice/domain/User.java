@@ -24,7 +24,7 @@ public class User {
 
     public void addOrder(Order order) {
         if(orders.contains(order)) {
-            throw new IllegalStateException("Current user with id \"%s\" already has this order with id \"%s\"".formatted(id, order.id()));
+            throw new IllegalStateException("Current user with id \"%s\" already has this order with id \"%s\"".formatted(id, order.getId()));
         }
         orders.add(order);
     }

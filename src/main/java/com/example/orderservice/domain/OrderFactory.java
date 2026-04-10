@@ -12,4 +12,12 @@ public final class OrderFactory {
                 Status.CREATED,
                 userId);
     }
+
+    public static Order createOrder(UUID id, String description, Status status, UUID userId) {
+        return new Order(
+                id,
+                description,
+                status,
+                userId);
+    }
 }
