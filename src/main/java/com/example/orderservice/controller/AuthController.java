@@ -7,6 +7,8 @@ import com.example.orderservice.dto.RegisterRequestDTO;
 import com.example.orderservice.dto.UserDTO;
 import com.example.orderservice.service.UserService;
 import com.example.orderservice.service.auth.JWTUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ import java.util.Objects;
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Auth API")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -31,6 +34,9 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/login")
+    @Operation(
+            summary = "Авторизироваться в системе"
+    )
     public AuthResponseDTO login(@RequestBody AuthRequestDTO request) {
         log.info("Try to login with username: {}", request.username());
 
@@ -46,6 +52,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Operation(
+            summary = "Зарегистрироваться в системе"
+    )
     public ResponseEntity<HttpStatus> register(@RequestBody RegisterRequestDTO registerRequestDTO) {
         log.info("Try to register new user with username: {}", registerRequestDTO.username());
         userService.register(registerRequestDTO);
