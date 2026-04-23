@@ -14,7 +14,7 @@ public class User {
     private final Role role;
     private List<Order> orders;
 
-    public User(UUID id, String username, String password, Role role, List<Order> orders) {
+    User(UUID id, String username, String password, Role role, List<Order> orders) {
         this.id = id;
         this.username = username;
         this.password = password;
