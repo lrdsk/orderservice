@@ -2,15 +2,16 @@ package com.example.orderservice.domain;
 
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
-@Getter
 public class User {
+    @Getter
     private final UUID id;
+    @Getter
     private final String username;
+    @Getter
     private final String password;
+    @Getter
     private final Role role;
     private List<Order> orders;
 
@@ -34,5 +35,9 @@ public class User {
                 .filter(order -> order.getId().equals(orderId))
                 .findFirst()
                 .ifPresent(foundOrder -> orders.remove(foundOrder));
+    }
+
+    public List<Order> getOrders() {
+        return Collections.unmodifiableList(orders);
     }
 }
