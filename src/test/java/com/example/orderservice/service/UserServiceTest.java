@@ -2,6 +2,7 @@ package com.example.orderservice.service;
 
 import com.example.orderservice.domain.Role;
 import com.example.orderservice.domain.User;
+import com.example.orderservice.domain.UserFactory;
 import com.example.orderservice.dto.OrderRequestDTO;
 import com.example.orderservice.dto.RegisterRequestDTO;
 import com.example.orderservice.entity.UserEntity;
@@ -52,7 +53,7 @@ public class UserServiceTest {
     }
 
     private @NonNull User getExpectedUser(UUID id) {
-        return new User(id, getExpectedTestName(), getExpectedEncodedPassword(), Role.USER, List.of());
+        return UserFactory.createUser(id, getExpectedTestName(), getExpectedEncodedPassword(), "USER", List.of());
     }
 
     private @NonNull UserEntity getExpectedUserEntity() {

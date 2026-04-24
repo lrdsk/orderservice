@@ -42,7 +42,7 @@ public class OrderController {
         log.info("Try to add new order with description: {}, for user with username: {}", orderRequestDTO.description(), userDetails.getUsername());
 
         userService.addNewOrder(userDetails.getUsername(), orderRequestDTO);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping

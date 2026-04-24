@@ -1,9 +1,6 @@
 package com.example.orderservice.service;
 
-import com.example.orderservice.domain.Order;
-import com.example.orderservice.domain.Role;
-import com.example.orderservice.domain.Status;
-import com.example.orderservice.domain.User;
+import com.example.orderservice.domain.*;
 import com.example.orderservice.entity.OrderEntity;
 import com.example.orderservice.entity.UserEntity;
 import com.example.orderservice.repository.OrderRepository;
@@ -80,7 +77,7 @@ public class OrderServiceTest {
     }
 
     private @NonNull User getExpectedUser(UUID id, String username) {
-        return new User(id, username, "encoded", Role.USER, List.of());
+        return UserFactory.createUser(id, username, "encoded", "USER", List.of());
     }
 
     private @NonNull OrderEntity getExpectedOrderEntity(UserEntity userEntity) {
@@ -197,7 +194,7 @@ public class OrderServiceTest {
     @DisplayName("Должен удалить заказ через пользователя с ролью admin")
     void deleteOrder_AsAdmin_ShouldDeleteSuccessfully() throws AccessDeniedException {
         //given
-        User adminUser = new User(expectedUserId, "admin", "encoded", Role.ADMIN, List.of());
+        User adminUser = UserFactory.createUser(expectedUserId, "admin", "encoded", "ADMIN", List.of());
 
         when(orderRepository.findById(expectedOrderId)).thenReturn(Optional.of(expectedOrderEntity));
         when(userService.getCurrentUser()).thenReturn(adminUser);
@@ -220,10 +217,8 @@ public class OrderServiceTest {
     @DisplayName("Должен удалить заказ от владельца заказа с ролью User")
     void deleteOrder_AsOwner_ShouldDeleteSuccessfully() throws AccessDeniedException {
         //given
-        User ownerUser = new User(expectedUserId, "Test name", "encoded", Role.USER, List.of());
-
         when(orderRepository.findById(expectedOrderId)).thenReturn(Optional.of(expectedOrderEntity));
-        when(userService.getCurrentUser()).thenReturn(ownerUser);
+        when(userService.getCurrentUser()).thenReturn(expectedUser);
         when(userMapper.fromModel(expectedUserEntity)).thenReturn(expectedUser);
         when(userMapper.toModel(any(User.class))).thenReturn(expectedUserEntity);
         when(userRepository.save(any(UserEntity.class))).thenReturn(expectedUserEntity);
@@ -240,7 +235,7 @@ public class OrderServiceTest {
     @DisplayName("Должен выбросить исключение при удалении заказа для пользователя без доступа")
     void deleteOrder_AsNonOwnerAndNotAdmin_ShouldThrowAccessDenied() {
         //given
-        User otherUser = new User(UUID.randomUUID(), "other", "encoded", Role.USER, List.of());
+        User otherUser = UserFactory.createUser(UUID.randomUUID(), "other", "encoded", "USER", List.of());
 
         when(orderRepository.findById(expectedOrderId)).thenReturn(Optional.of(expectedOrderEntity));
         when(userService.getCurrentUser()).thenReturn(otherUser);
