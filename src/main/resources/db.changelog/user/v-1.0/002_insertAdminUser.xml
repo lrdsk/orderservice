@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="002_insertAdminUser" author="y.mikhailov">
+        <sql>INSERT INTO users values ('3e0b972b-a09f-4a09-9496-e675c1240ae2', 'admin', '$2a$10$zm0pRt1qqEoPUhzFyUWQAOyBJ3Z7qncevjyM0QuSlGc3j0COZXWLy', 'ADMIN')</sql>
+    </changeSet>
+</databaseChangeLog>
