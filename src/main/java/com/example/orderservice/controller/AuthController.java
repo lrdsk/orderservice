@@ -5,6 +5,7 @@ import com.example.orderservice.dto.AuthRequestDTO;
 import com.example.orderservice.dto.AuthResponseDTO;
 import com.example.orderservice.dto.RegisterRequestDTO;
 import com.example.orderservice.dto.UserDTO;
+import com.example.orderservice.service.AuthService;
 import com.example.orderservice.service.UserService;
 import com.example.orderservice.service.auth.JWTUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,49 +24,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@Slf4j
-@Tag(name = "Auth API")
-public class AuthController {
+public class AuthController implements AuthControllerAPI{
 
-    private final AuthenticationManager authenticationManager;
-    private final JWTUtils jwtService;
+    private final AuthService authService;
     private final UserService userService;
 
-    @PostMapping("/login")
-    @Operation(
-            summary = "Авторизироваться в системе"
-    )
+    @Override
     public AuthResponseDTO login(@RequestBody AuthRequestDTO request) {
-        log.info("Try to login with username: {}", request.username());
-
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.username(), request.password())
-        );
-
-        log.info("user with username {} has been successfully authenticated", request.username());
-
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String token = jwtService.generateToken(Objects.requireNonNull(userDetails));
-        return new AuthResponseDTO(token);
+        return authService.auth(request.username(), request.password());
     }
 
-    @PostMapping("/register")
-    @Operation(
-            summary = "Зарегистрироваться в системе"
-    )
+    @Override
     public ResponseEntity<HttpStatus> register(@RequestBody RegisterRequestDTO registerRequestDTO) {
-        log.info("Try to register new user with username: {}", registerRequestDTO.username());
         userService.register(registerRequestDTO);
-        log.info("The new user has been successfully registered");
 
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
 
-    @GetMapping("/me")
+    @Override
     public UserDTO getInformation(@AuthenticationPrincipal UserDetails userDetails) {
-        log.info("Try to get information for user with username: {}", userDetails.getUsername());
         User userInformation = userService.findInformationByUsername(userDetails.getUsername());
 
         return new UserDTO(

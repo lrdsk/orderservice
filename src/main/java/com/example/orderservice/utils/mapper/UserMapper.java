@@ -1,4 +1,4 @@
-package com.example.orderservice.service.user;
+package com.example.orderservice.utils.mapper;
 
 import com.example.orderservice.domain.User;
 import com.example.orderservice.domain.UserFactory;

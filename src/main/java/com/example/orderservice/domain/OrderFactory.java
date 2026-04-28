@@ -2,6 +2,14 @@ package com.example.orderservice.domain;
 
 import java.util.UUID;
 
+/**
+ * Фабрика для создания доменных объектов {@link Order}.
+ * <p>
+ * Предоставляет статические методы для создания заказов с автоматической
+ * генерацией идентификатора или с указанием конкретного ID.
+ * Используется в сервисах для создания новых заказов.
+ * </p>
+ */
 public final class OrderFactory {
     private OrderFactory() {
     }

@@ -25,68 +25,38 @@ import java.nio.file.AccessDeniedException;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/orders")
 @RequiredArgsConstructor
-@Slf4j
-@Tag(name = "Order API")
-public class OrderController {
+public class OrderController implements OrderControllerAPI {
     private final UserService userService;
     private final OrderService orderService;
 
-    @PostMapping
-    @Operation(
-            summary = "Создание нового заказа",
-            description = "Создание нового заказа доступно только авторизованным пользователям"
-    )
+    @Override
     public ResponseEntity<HttpStatus> createOrder(@AuthenticationPrincipal UserDetails userDetails, @RequestBody OrderRequestDTO orderRequestDTO) {
-        log.info("Try to add new order with description: {}, for user with username: {}", orderRequestDTO.description(), userDetails.getUsername());
-
         userService.addNewOrder(userDetails.getUsername(), orderRequestDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @GetMapping
-    @Operation(
-            summary = "Получить все заказы для текущего пользователя",
-            description = "Возвращает список заказов для авторизированного пользователя"
-    )
+    @Override
     public Page<OrderResponseDTO> getAllOrdersForCurrentUser(@AuthenticationPrincipal UserDetails userDetails,
                                                              @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        log.info("Try to get all orders for user with username: {}", userDetails.getUsername());
-
         Page<Order> orders = orderService.findByUsername(userDetails.getUsername(), pageable);
         return orders.map(this::mapToOrderResponseDTO);
     }
 
-    @GetMapping("/all")
-    @Operation(
-            summary = "Получить список всех заказов",
-            description = "Возвращает информацию о всех заказах для всех пользователей, доступно для администраторов"
-    )
+    @Override
     public Page<AdminOrderResponseDTO> getAllOrders(@PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        log.info("Try to get all orders");
         return orderService.findAll(pageable).map(this::mapToAdminOrderResponseDTO);
     }
 
-    @PutMapping("/{id}")
-    @Operation(
-            summary = "Изменить статус заказа",
-            description = "Изменение статуса заказа по его id, доступно для администраторов"
-    )
+    @Override
     public AdminOrderResponseDTO changeOrderStatus(@PathVariable("id") UUID orderId, @RequestBody OrderStatusRequestDTO orderStatusRequestDTO) {
-        log.info("Try to change status to: {} for order with id: {}", orderStatusRequestDTO.status(), orderId);
         Order order = orderService.changeStatus(orderId, orderStatusRequestDTO.status());
 
         return mapToAdminOrderResponseDTO(order);
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(
-            summary = "Удалить заказ по его id",
-            description = "Удаление заказа из списка пользователя, доступно владельцу заказа и администраторам"
-    )
+    @Override
     public ResponseEntity<HttpStatus> deleteOrderById(@PathVariable("id") UUID orderId) throws AccessDeniedException {
-        log.info("Try to delete order with id: {}", orderId);
         orderService.deleteOrder(orderId);
 
         return new ResponseEntity<>(HttpStatus.OK);
@@ -94,10 +64,10 @@ public class OrderController {
 
     private OrderResponseDTO mapToOrderResponseDTO(Order order) {
         return new OrderResponseDTO(
-                        order.getDescription(),
-                        order.getStatus().toString(),
-                        order.getCreatedAt()
-                );
+                order.getDescription(),
+                order.getStatus().toString(),
+                order.getCreatedAt()
+        );
     }
 
     private AdminOrderResponseDTO mapToAdminOrderResponseDTO(Order order) {

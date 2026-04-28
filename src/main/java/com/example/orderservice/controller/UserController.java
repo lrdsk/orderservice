@@ -15,31 +15,19 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/users")
 @RequiredArgsConstructor
-@Slf4j
-@Tag(name = "User API")
-public class UserController {
+public class UserController implements UserControllerAPI {
     private final UserService userService;
 
-    @GetMapping
-    @Operation(
-            summary = "Получить информацию о всех пользователях",
-            description = "Возвращает список с информацией о всех пользователях системы"
-    )
+    @Override
     public List<UserDTO> getAllUsers() {
-        log.info("Getting information about all users");
         List<User> users = userService.findAll();
 
         return mapToUserDTO(users);
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(
-            summary = "Удалить пользователя по его id"
-    )
+    @Override
     public ResponseEntity<HttpStatus> deleteUserById(@PathVariable("id") UUID id) {
-        log.info("Try to delete user with id: {}", id);
         userService.delete(id);
 
         return new ResponseEntity<>(HttpStatus.OK);

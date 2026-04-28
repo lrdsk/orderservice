@@ -1,6 +1,5 @@
 package com.example.orderservice.service;
 
-import com.example.orderservice.domain.Role;
 import com.example.orderservice.domain.User;
 import com.example.orderservice.domain.UserFactory;
 import com.example.orderservice.dto.OrderRequestDTO;
@@ -8,7 +7,7 @@ import com.example.orderservice.dto.RegisterRequestDTO;
 import com.example.orderservice.entity.UserEntity;
 import com.example.orderservice.repository.UserRepository;
 import com.example.orderservice.repository.exception.UsernameAlreadyExistsException;
-import com.example.orderservice.service.user.UserMapper;
+import com.example.orderservice.utils.mapper.UserMapper;
 import com.example.orderservice.service.user.UserServiceImpl;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;

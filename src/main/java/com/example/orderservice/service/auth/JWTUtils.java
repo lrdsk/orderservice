@@ -12,6 +12,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.function.Function;
 
+/**
+ * Утилита для генерации, валидации и извлечения данных из JWT-токенов.
+ * <p>
+ * Использует секретный ключ и время жизни токена, заданные в конфигурации.
+ * Реализует стандартный подход с подписью HMAC-SHA.
+ * </p>
+ */
 @Component
 public class JWTUtils {
     @Value("${jwt.secret}")
